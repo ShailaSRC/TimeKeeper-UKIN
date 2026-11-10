@@ -1,0 +1,2086 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UKIN Session Timer - Pomofocus Style</title>
+  <style>
+    :root {
+      --bg-primary: #386b99;
+      --bg-blue: #386b99;
+      --bg-orange: #c86827;
+      --bg-red: #ba4949;
+      --card-bg: rgba(255, 255, 255, 0.15);
+      --card-bg-active: rgba(255, 255, 255, 0.28);
+      --card-border: rgba(255, 255, 255, 0.3);
+      --text-main: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.85);
+      --btn-shadow: rgb(235, 235, 235) 0px 6px 0px;
+      --btn-shadow-active: rgb(220, 220, 220) 0px 2px 0px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg-blue);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background-color 0.5s ease;
+      padding-bottom: 60px;
+    }
+
+    body.theme-orange {
+      background-color: var(--bg-orange);
+    }
+
+    body.theme-red {
+      background-color: var(--bg-red);
+    }
+
+    /* Top Header - Ultra Wide & High Z-Index */
+    header {
+      width: 98%;
+      max-width: 1580px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-icon {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      z-index: 110;
+    }
+
+    .btn-icon-text {
+      background: rgba(255, 255, 255, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      padding: 9px 18px;
+      min-height: 42px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.15s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      user-select: none;
+      pointer-events: auto;
+    }
+
+    .btn-icon-text:hover {
+      background: rgba(255, 255, 255, 0.35);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+      transform: translateY(-1px);
+    }
+
+    .btn-icon-text:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+
+    .btn-icon-text svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    /* Main Container - Ultra Wide with Uniform Gap */
+    main {
+      width: 98%;
+      max-width: 1580px;
+      padding: 0 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Shared Panel Card Styles - Pure Clean Borderless Pomofocus (Exact Same Size) */
+    .timer-panel {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 6px 32px;
+      min-height: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      backdrop-filter: blur(6px);
+      transition: background 0.3s, box-shadow 0.3s;
+      border: none;
+      width: 100%;
+      gap: 24px;
+    }
+
+    .panel-left-info {
+      width: 380px;
+      flex-shrink: 0;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .panel-left-info.total-info-col {
+      width: 250px;
+      flex-shrink: 0;
+    }
+
+    .panel-kicker {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.8);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .panel-heading {
+      font-size: clamp(2.3rem, 3.6vw, 3.6rem);
+      font-weight: 900;
+      line-height: 1.02;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      word-break: break-word;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-heading .heading-line {
+      display: block;
+      line-height: 1.02;
+    }
+
+    .panel-substatus {
+      font-size: 16px;
+      font-weight: 800;
+      color: rgba(255, 255, 255, 0.95);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .panel-right-timer {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      min-width: 0;
+    }
+
+    /* Colossal Numbers in Panels - Fitted for 7-character times without overlap */
+    .timer-display-large {
+      font-size: clamp(7.5rem, 16vw, 15.5rem);
+      font-weight: 900;
+      line-height: 0.76;
+      letter-spacing: -4px;
+      font-variant-numeric: tabular-nums;
+      margin: 0;
+      user-select: none;
+      text-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+      color: #ffffff;
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    .total-timer-panel {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .total-timer-panel .timer-display-large {
+      font-size: clamp(6.8rem, 14.5vw, 14.5rem);
+      margin: 0;
+    }
+
+    .session-timer-panel.warning-border {
+      box-shadow: 0 0 0 3px #ff4d4d, 0 6px 24px rgba(255, 77, 77, 0.4);
+      animation: pulse-border 1.5s infinite alternate;
+    }
+
+    @keyframes pulse-border {
+      0% { box-shadow: 0 0 0 2px #ff6b6b, 0 4px 15px rgba(255, 107, 107, 0.25); }
+      100% { box-shadow: 0 0 0 5px #ff2a2a, 0 6px 26px rgba(255, 42, 42, 0.55); }
+    }
+
+    /* Progress & Total Sub-info - Vertically Stacked Target Under Remaining */
+    .panel-meta-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 4px;
+      padding: 0;
+      text-align: left;
+    }
+
+    .panel-meta-info strong {
+      color: #ffffff;
+      font-weight: 800;
+    }
+
+    .progress-track {
+      display: none;
+      width: 0;
+      height: 0;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .progress-fill {
+      display: none;
+    }
+
+    /* Overtime Badge */
+    .overtime-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ff2d2d;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      animation: pulse-overtime 1s infinite alternate;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    @keyframes pulse-overtime {
+      0% { opacity: 0.85; transform: scale(0.98); }
+      100% { opacity: 1; transform: scale(1.02); }
+    }
+
+    
+    /* Session Navigation Cards - Uniform Flow */
+    .session-nav-bar {
+      width: 100%;
+      max-width: 1580px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .session-nav-card {
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      border-radius: 6px;
+      padding: 14px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+      transition: background 0.2s;
+    }
+
+    .session-nav-card:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .nav-card-kicker {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .nav-card-main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .nav-name {
+      color: #ffffff;
+      font-weight: 900;
+      font-size: clamp(1.75rem, 2.9vw, 2.75rem);
+      line-height: 1.15;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+    }
+
+    .nav-dur-badge {
+      font-size: clamp(1.4rem, 2.2vw, 2.1rem);
+      font-weight: 900;
+      color: #ffffff;
+      background: rgba(0, 0, 0, 0.16);
+      padding: 6px 18px;
+      border-radius: 6px;
+      white-space: nowrap;
+      border: none;
+      letter-spacing: 0.5px;
+    }
+
+    /* Controls Area - Uniform Flow */
+    .timer-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      margin: 0 auto;
+    }
+
+    .btn-main-action {
+      background-color: #ffffff;
+      color: var(--bg-blue);
+      border: none;
+      width: 240px;
+      height: 58px;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border-radius: 4px;
+      cursor: pointer;
+      box-shadow: rgb(235, 235, 235) 0px 6px 0px;
+      transition: all 0.1s ease-in-out;
+    }
+
+    body.theme-orange .btn-main-action {
+      color: var(--bg-orange);
+    }
+
+    body.theme-red .btn-main-action {
+      color: var(--bg-red);
+    }
+
+    .btn-main-action:active,
+    .btn-main-action.is-running {
+      transform: translateY(4px);
+      box-shadow: var(--btn-shadow-active);
+    }
+
+    .btn-sub-action {
+      background: rgba(255, 255, 255, 0.22);
+      border: none;
+      color: #ffffff;
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-sub-action:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    .btn-sub-action:active {
+      transform: scale(0.95);
+    }
+
+    .btn-sub-action svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+
+    /* Warning Alert Banner (Time Reached Zero) */
+    .warning-alert-panel {
+      margin-top: 18px;
+      background: rgba(210, 30, 30, 0.95);
+      border: 2px solid #ffffff;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      animation: alert-pop 0.3s ease-out;
+    }
+
+    @keyframes alert-pop {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .warning-title {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .warning-desc {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.92);
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+
+    .warning-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .btn-alert {
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.1s, opacity 0.2s;
+    }
+
+    .btn-alert:active {
+      transform: scale(0.96);
+    }
+
+    .btn-alert-done {
+      background: #ffffff;
+      color: #b31b1b;
+      font-weight: 800;
+    }
+
+    .btn-alert-notdone {
+      background: rgba(0, 0, 0, 0.35);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    /* Session List: DAFTAR KEGIATAN */
+    .sessions-card {
+      background: transparent;
+      width: 100%;
+      max-width: 850px;
+      margin: 0 auto;
+    }
+
+    .sessions-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 10px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+      margin-bottom: 14px;
+    }
+
+    .sessions-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .session-count-badge {
+      background: rgba(255, 255, 255, 0.2);
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .session-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Session Item Rows - Authentic Pomofocus Task Style */
+    .session-item {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+      border-left: 4px solid transparent;
+      user-select: none;
+    }
+
+    /* Active Highlighted Session - Pomofocus White Focus Card */
+    .session-item.is-active {
+      background: #ffffff;
+      border-left: 6px solid #222222;
+      padding: 16px 18px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    }
+
+    .session-item.is-active .session-name {
+      color: #222222;
+    }
+
+    .session-item.is-active .session-number {
+      background: #222222;
+      color: #ffffff;
+    }
+
+    .session-item.is-active .session-status-text {
+      color: #555555;
+    }
+
+    .session-item.is-active .session-duration-tag {
+      background: #f3f4f6;
+      color: #222222;
+      border: 1px solid #e5e7eb;
+    }
+
+    .session-item.is-completed {
+      background: rgba(0, 0, 0, 0.12);
+      opacity: 0.65;
+      border-left: 4px solid #4ade80;
+      border-radius: 4px;
+    }
+
+    .session-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .session-number {
+      font-size: 13px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.2);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .session-item.is-active .session-number {
+      background: #ffffff;
+      color: var(--bg-primary);
+      width: 32px;
+      height: 32px;
+      font-size: 15px;
+    }
+
+    .session-details {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .session-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .session-item.is-active .session-name {
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .session-item.is-completed .session-name {
+      text-decoration: line-through;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .session-status-text {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .session-item.is-active .session-status-text {
+      color: #ffffff;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .session-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-align: right;
+    }
+
+    .session-duration-tag {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.9);
+      background: rgba(0, 0, 0, 0.15);
+      padding: 4px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .session-item.is-active .session-duration-tag {
+      background: #ffffff;
+      color: var(--bg-primary);
+      font-weight: 800;
+    }
+
+    .session-check-icon {
+      color: #4ade80;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    /* Modals & Dialogs */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-backdrop.is-open {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #ffffff;
+      color: #333333;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 490px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      animation: modal-enter 0.2s ease-out;
+    }
+
+    @keyframes modal-enter {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 24px;
+      border-bottom: 1px solid #eeeeee;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #222222;
+    }
+
+    .btn-close-modal {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #888888;
+      line-height: 1;
+      padding: 4px;
+    }
+
+    .btn-close-modal:hover {
+      color: #222222;
+    }
+
+    .modal-body {
+      padding: 20px 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #555555;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input {
+      padding: 10px 12px;
+      border: 1px solid #dddddd;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #333333;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .form-input:focus {
+      border-color: var(--bg-primary);
+    }
+
+    .preset-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .preset-btn {
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      color: #4b5563;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .preset-btn:hover {
+      background: #e5e7eb;
+      color: #1f2937;
+    }
+
+    .preset-btn.is-active {
+      background: #386b99;
+      color: #ffffff;
+      border-color: #386b99;
+      font-weight: 700;
+    }
+
+    /* Modal Sessions Manager */
+    .edit-sessions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .edit-session-row {
+      display: grid;
+      grid-template-columns: 24px 1fr 65px 50px 64px;
+      gap: 6px;
+      align-items: center;
+      background: #f9fafb;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .drag-handle {
+      color: #9ca3af;
+      font-size: 13px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .pct-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #6b7280;
+      text-align: right;
+    }
+
+    .row-btn-group {
+      display: flex;
+      gap: 3px;
+      justify-content: flex-end;
+    }
+
+    .btn-row-action {
+      background: none;
+      border: none;
+      color: #6b7280;
+      cursor: pointer;
+      padding: 4px 5px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .btn-row-action:hover {
+      background: #e5e7eb;
+      color: #1f2937;
+    }
+
+    .btn-row-delete:hover {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .sessions-summary-card {
+      background: #f3f4f6;
+      border-radius: 6px;
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #4b5563;
+      margin-top: 4px;
+    }
+
+    .btn-normalize {
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      color: #1f2937;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-normalize:hover {
+      background: #e5e7eb;
+    }
+
+    .btn-add-session {
+      background: #f3f4f6;
+      border: 2px dashed #d1d5db;
+      color: #4b5563;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      margin-top: 4px;
+    }
+
+    .btn-add-session:hover {
+      background: #e5e7eb;
+      border-color: #9ca3af;
+      color: #111827;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid #eeeeee;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      background: #fafafa;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      position: sticky;
+      bottom: 0;
+      z-index: 20;
+    }
+
+    .btn-cancel {
+      padding: 10px 20px;
+      border-radius: 6px;
+      background: #e5e7eb;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-cancel:hover {
+      background: #d1d5db;
+    }
+
+    .btn-save {
+      padding: 10px 24px;
+      border-radius: 6px;
+      background: #386b99;
+      color: #ffffff !important;
+      border: none;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(56, 107, 153, 0.4);
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .btn-save:hover {
+      background: #2b557a;
+      opacity: 1;
+    }
+
+    .btn-save:active {
+      transform: scale(0.97);
+    }
+
+    /* In-App Confirmation Dialog */
+    .confirm-dialog {
+      background: #ffffff;
+      color: #222222;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 380px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      text-align: center;
+    }
+
+    .confirm-dialog h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .confirm-dialog p {
+      font-size: 14px;
+      color: #666666;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .confirm-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    /* Notification Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(0, 0, 0, 0.85);
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      pointer-events: none;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0;
+      z-index: 2000;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Responsiveness */
+    @media (max-width: 860px) {
+      .timer-panel {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px 18px;
+        gap: 12px;
+      }
+      .session-nav-bar {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .panel-left-info {
+        width: 100%;
+      }
+      .panel-right-timer {
+        width: 100%;
+        justify-content: center;
+      }
+      .timer-display-large,
+      .session-timer-panel .timer-display-large,
+      .total-timer-panel .timer-display-large {
+        font-size: 20vw;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 12px 16px;
+        margin-bottom: 16px;
+      }
+      .brand span {
+        font-size: 17px;
+      }
+      .btn-icon-text span {
+        display: none;
+      }
+      .btn-icon-text {
+        padding: 8px 10px;
+      }
+      .btn-main-action {
+        width: 180px;
+        height: 54px;
+        font-size: 21px;
+      }
+      .edit-session-row {
+        grid-template-columns: 20px 1fr 55px 45px 55px;
+        gap: 4px;
+        padding: 6px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="brand">
+      <svg class="brand-icon" viewBox="0 0 24 24">
+        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/>
+      </svg>
+      <span>UKIN Timer</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn-icon-text" id="btnReset" title="Atur ulang waktu ke awal">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+        </svg>
+        <span>Reset</span>
+      </button>
+      <!-- Layar Penuh hidden as requested -->
+      <button class="btn-icon-text" id="btnFullscreen" title="Layar Penuh" style="display: none;">
+        <span>Layar Penuh</span>
+      </button>
+      <button class="btn-icon-text" id="btnSettings" title="Pengaturan Sesi">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+        </svg>
+        <span>Settings</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main>
+    <!-- PANEL 1: TOTAL WAKTU UKIN (Left Info + Right Giant Countdown) -->
+    <section class="timer-panel total-timer-panel" id="totalTimerBox">
+      <div class="panel-left-info total-info-col">
+        <div class="panel-kicker">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+          </svg>
+          <span>TOTAL WAKTU UKIN</span>
+        </div>
+        <div class="panel-heading">
+          <span class="heading-line">DURASI</span>
+          <span class="heading-line">UKIN</span>
+        </div>
+        <div class="panel-meta-info">
+          <div>sisa total: <strong id="totalRemainingText">50:00</strong></div>
+          <div>target waktu: <strong id="totalAllocatedText">50:00</strong></div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="totalProgressBar"></div>
+        </div>
+      </div>
+
+      <div class="panel-right-timer">
+        <!-- Giant Total Countdown Display -->
+        <div class="timer-display-large" id="totalTimerLargeDisplay">50:00</div>
+      </div>
+    </section>
+
+    <!-- PANEL 2: TIMER SESI AKTIF (Left Info + Right Giant Countdown) -->
+    <section class="timer-panel session-timer-panel" id="timerBox">
+      <div class="panel-left-info">
+        <div class="panel-kicker" id="sessionKickerText">SESI 1 DARI 3</div>
+        <div class="panel-heading" id="currentSessionLabel">PEMBUKAAN</div>
+        <div class="panel-substatus" id="sessionSubStatusText">● Sedang Berlangsung (20%)</div>
+
+        <!-- Overtime Indicator -->
+        <div class="overtime-badge" id="overtimeBadge" style="display: none; margin-top: 6px;">
+          <span>⚠️ LEWAT WAKTU:</span>
+          <span id="overtimeDuration">+00:00</span>
+        </div>
+      </div>
+
+      <div class="panel-right-timer">
+        <!-- Giant Session Countdown Display -->
+        <div class="timer-display-large" id="sessionTimerDisplay">10:00</div>
+      </div>
+    </section>
+
+    <!-- Session Navigation Cards (Previous & Upcoming Session info) -->
+    <div class="session-nav-bar">
+      <div class="session-nav-card nav-prev-card">
+        <div class="nav-card-kicker">◀ SESI SEBELUMNYA</div>
+        <div class="nav-card-main">
+          <span class="nav-name" id="prevSessionNameText">-</span>
+          <span class="nav-dur-badge" id="prevSessionDurText">-</span>
+        </div>
+      </div>
+
+      <div class="session-nav-card nav-next-card">
+        <div class="nav-card-kicker">SESI BERIKUTNYA ▶</div>
+        <div class="nav-card-main">
+          <span class="nav-name" id="nextSessionNameText">-</span>
+          <span class="nav-dur-badge" id="nextSessionDurText">-</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls Area -->
+    <div class="timer-controls">
+      <button class="btn-main-action" id="btnStartPause">START</button>
+      <button class="btn-sub-action" id="btnNextSession" title="Lanjut ke Sesi Berikutnya">
+        <svg viewBox="0 0 24 24">
+          <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Visual Warning Alert (Appears when session reaches zero) -->
+    <div class="warning-alert-panel" id="warningPanel" style="display: none; max-width: 600px; margin: 0 auto; width: 100%;">
+      <div class="warning-title">
+        <span>⚠️ ALOKASI WAKTU SESI HABIS!</span>
+      </div>
+      <div class="warning-desc" id="warningMessage">
+        Waktu sesi ini telah mencapai 00:00. Apakah kegiatan sesi ini sudah selesai?
+      </div>
+      <div class="warning-buttons">
+        <button class="btn-alert btn-alert-done" id="btnAlertDone">SELESAI (Lanjut Sesi)</button>
+        <button class="btn-alert btn-alert-notdone" id="btnAlertNotDone">BELUM SELESAI (Lanjut)</button>
+      </div>
+    </div>
+
+    <!-- PANEL 3: DAFTAR KEGIATAN -->
+    <section class="sessions-card">
+      <div class="sessions-header">
+        <div class="sessions-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+          </svg>
+          <span>DAFTAR KEGIATAN</span>
+        </div>
+        <span class="session-count-badge" id="sessionCountBadge">3 Sesi</span>
+      </div>
+
+      <div class="session-list" id="sessionListContainer">
+        <!-- Rendered dynamically via JavaScript -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Settings Modal -->
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Pengaturan Sesi UKIN</h3>
+        <button class="btn-close-modal" id="btnCloseSettings">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- Total UKIN Duration -->
+        <div class="form-group">
+          <label class="form-label" for="inputTotalMinutes">Total Durasi UKIN (Menit)</label>
+          <input type="number" id="inputTotalMinutes" class="form-input" min="5" max="300" value="50">
+        </div>
+
+        <!-- Presets -->
+        <div class="form-group">
+          <label class="form-label">Pilihan Cepat (Preset UKIN)</label>
+          <div class="preset-chips">
+            <button type="button" class="preset-btn" id="btnPreset50">UKIN Standar (50 Mnt)</button>
+            <button type="button" class="preset-btn" id="btnPreset70">UKIN Panjang (70 Mnt)</button>
+            <button type="button" class="preset-btn" id="btnPreset80">UKIN 2 JP (80 Mnt)</button>
+            <button type="button" class="preset-btn" id="btnPreset90">UKIN 2 JP (90 Mnt)</button>
+            <button type="button" class="preset-btn" id="btnPreset30">Simulasi Singkat (30 Mnt)</button>
+          </div>
+        </div>
+
+        <!-- Session List Editor -->
+        <div class="form-group">
+          <label class="form-label">Daftar Sesi Kegiatan & Proporsi</label>
+          <div class="edit-sessions-list" id="editSessionsList">
+            <!-- Rendered dynamically -->
+          </div>
+          <button type="button" class="btn-add-session" id="btnAddSessionRow">+ Tambah Sesi Kegiatan</button>
+
+          <!-- Sessions Summary Bar -->
+          <div class="sessions-summary-card" id="sessionsSummaryCard">
+            <span id="sessionsSummaryText">Total: 50 Mnt (100%)</span>
+            <button type="button" class="btn-normalize" id="btnNormalizeProportion">Samakan ke Total</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" id="btnCancelSettings">Batal</button>
+        <button type="button" class="btn-save" id="btnSaveSettings">Simpan Perubahan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Reset Dialog -->
+  <div class="modal-backdrop" id="confirmResetModal">
+    <div class="confirm-dialog">
+      <h3>Atur Ulang Timer?</h3>
+      <p>Timer total dan semua sesi akan dikembalikan ke posisi awal. Tindakan ini tidak dapat dibatalkan.</p>
+      <div class="confirm-actions">
+        <button type="button" class="btn-cancel" id="btnCancelReset">Batal</button>
+        <button type="button" class="btn-save" id="btnConfirmReset" style="background: #dc2626;">Ya, Atur Ulang</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toastMessage">Pengaturan berhasil disimpan</div>
+
+  <script>
+    /* ==========================================================================
+       UKIN SESSION TIMER ENGINE
+       Pomofocus UI/UX Paradigm
+       Proportional Dynamic Allocation Engine (Total-locked Video Duration)
+       ========================================================================== */
+
+    // Default Presets (Sessions sum up exactly to total video duration)
+    const PRESETS = {
+      p50: {
+        totalMinutes: 50,
+        sessions: [
+          { name: "Kegiatan Pendahuluan / Pembukaan", durationMin: 10 },
+          { name: "Kegiatan Inti (Pembelajaran & Praktik)", durationMin: 35 },
+          { name: "Kegiatan Penutup & Refleksi", durationMin: 5 }
+        ]
+      },
+      p70: {
+        totalMinutes: 70,
+        sessions: [
+          { name: "Kegiatan Pendahuluan / Pembukaan", durationMin: 10 },
+          { name: "Kegiatan Inti (Pembelajaran & Praktik)", durationMin: 50 },
+          { name: "Kegiatan Penutup & Refleksi", durationMin: 10 }
+        ]
+      },
+      p80: {
+        totalMinutes: 80,
+        sessions: [
+          { name: "Kegiatan Pendahuluan / Pembukaan", durationMin: 10 },
+          { name: "Kegiatan Inti (Pembelajaran & Praktik)", durationMin: 60 },
+          { name: "Kegiatan Penutup & Refleksi", durationMin: 10 }
+        ]
+      },
+      p90: {
+        totalMinutes: 90,
+        sessions: [
+          { name: "Kegiatan Pendahuluan / Pembukaan", durationMin: 10 },
+          { name: "Kegiatan Inti (Pembelajaran & Praktik)", durationMin: 70 },
+          { name: "Kegiatan Penutup & Refleksi", durationMin: 10 }
+        ]
+      },
+      p30: {
+        totalMinutes: 30,
+        sessions: [
+          { name: "Kegiatan Pendahuluan", durationMin: 5 },
+          { name: "Kegiatan Inti", durationMin: 20 },
+          { name: "Kegiatan Penutup", durationMin: 5 }
+        ]
+      }
+    };
+
+    // State Variables
+    let appState = {
+      totalDurationMs: 50 * 60 * 1000,
+      sessions: [
+        { id: 1, name: "Kegiatan Pendahuluan / Pembukaan", durationMin: 10, currentAllocatedMs: 10 * 60 * 1000, basePercent: 20 },
+        { id: 2, name: "Kegiatan Inti (Pembelajaran & Praktik)", durationMin: 35, currentAllocatedMs: 35 * 60 * 1000, basePercent: 70 },
+        { id: 3, name: "Kegiatan Penutup & Refleksi", durationMin: 5, currentAllocatedMs: 5 * 60 * 1000, basePercent: 10 }
+      ],
+      currentSessionIndex: 0,
+      isRunning: false,
+      isOvertimeAcknowledged: false, // User selected "BELUM SELESAI"
+      completedSessionIds: [],
+
+      // Timekeeping via Timestamps
+      totalElapsedMs: 0,
+      sessionElapsedMs: 0,
+      currentSessionAllocatedMs: 10 * 60 * 1000,
+      lastTimestamp: null
+    };
+
+    // Local Draft for Settings Modal
+    let draftSettings = {
+      totalMinutes: 50,
+      sessions: []
+    };
+
+    let animationFrameId = null;
+
+    // DOM Elements
+    const bodyEl = document.body;
+    const timerBox = document.getElementById('timerBox');
+    const totalTimerLargeDisplay = document.getElementById('totalTimerLargeDisplay');
+    const currentSessionLabel = document.getElementById('currentSessionLabel');
+    const sessionKickerText = document.getElementById('sessionKickerText');
+    const sessionSubStatusText = document.getElementById('sessionSubStatusText');
+    const sessionTimerDisplay = document.getElementById('sessionTimerDisplay');
+    const overtimeBadge = document.getElementById('overtimeBadge');
+    const overtimeDuration = document.getElementById('overtimeDuration');
+    const totalRemainingText = document.getElementById('totalRemainingText');
+    const totalAllocatedText = document.getElementById('totalAllocatedText');
+    const totalProgressBar = document.getElementById('totalProgressBar');
+    const btnStartPause = document.getElementById('btnStartPause');
+    const btnNextSession = document.getElementById('btnNextSession');
+    const warningPanel = document.getElementById('warningPanel');
+    const btnAlertDone = document.getElementById('btnAlertDone');
+    const btnAlertNotDone = document.getElementById('btnAlertNotDone');
+    const sessionCountBadge = document.getElementById('sessionCountBadge');
+    const sessionListContainer = document.getElementById('sessionListContainer');
+
+    // Header & Modals
+    const btnReset = document.getElementById('btnReset');
+    const btnFullscreen = document.getElementById('btnFullscreen');
+    const btnSettings = document.getElementById('btnSettings');
+    const prevSessionNameText = document.getElementById('prevSessionNameText');
+    const nextSessionNameText = document.getElementById('nextSessionNameText');
+    const prevSessionDurText = document.getElementById('prevSessionDurText');
+    const nextSessionDurText = document.getElementById('nextSessionDurText');
+    const settingsModal = document.getElementById('settingsModal');
+    const btnCloseSettings = document.getElementById('btnCloseSettings');
+    const btnCancelSettings = document.getElementById('btnCancelSettings');
+    const btnSaveSettings = document.getElementById('btnSaveSettings');
+    const inputTotalMinutes = document.getElementById('inputTotalMinutes');
+    const editSessionsList = document.getElementById('editSessionsList');
+    const btnAddSessionRow = document.getElementById('btnAddSessionRow');
+    const btnPreset50 = document.getElementById('btnPreset50');
+    const btnPreset70 = document.getElementById('btnPreset70');
+    const btnPreset80 = document.getElementById('btnPreset80');
+    const btnPreset90 = document.getElementById('btnPreset90');
+    const btnPreset30 = document.getElementById('btnPreset30');
+    const sessionsSummaryText = document.getElementById('sessionsSummaryText');
+    const btnNormalizeProportion = document.getElementById('btnNormalizeProportion');
+
+    const confirmResetModal = document.getElementById('confirmResetModal');
+    const btnCancelReset = document.getElementById('btnCancelReset');
+    const btnConfirmReset = document.getElementById('btnConfirmReset');
+    const toastMessage = document.getElementById('toastMessage');
+
+    /* ==========================================================================
+       HELPER FUNCTIONS
+       ========================================================================== */
+    function formatTime(ms, isTotalUkin = false) {
+      const isNegative = ms < 0;
+      const absMs = Math.abs(ms);
+      const totalSec = Math.floor(absMs / 1000);
+      const hours = Math.floor(totalSec / 3600);
+      const min = Math.floor((totalSec % 3600) / 60);
+      const sec = totalSec % 60;
+
+      // If duration >= 60 mins (e.g. 90m -> 1.30.00), format as H.MM.SS (jam.menit.detik)
+      if (hours > 0 || (isTotalUkin && appState.totalDurationMs >= 3600000)) {
+        const hStr = String(hours);
+        const mStr = String(min).padStart(2, '0');
+        const sStr = String(sec).padStart(2, '0');
+        return (isNegative ? '-' : '') + `${hStr}.${mStr}.${sStr}`;
+      } else {
+        const mStr = String(min).padStart(2, '0');
+        const sStr = String(sec).padStart(2, '0');
+        return (isNegative ? '-' : '') + `${mStr}:${sStr}`;
+      }
+    }
+
+    function formatDurationPretty(ms) {
+      const totalSec = Math.round(ms / 1000);
+      const min = Math.floor(totalSec / 60);
+      const sec = totalSec % 60;
+      if (sec === 0) {
+        return `${min} Mnt`;
+      }
+      return `${min}m ${sec}s`;
+    }
+
+    function showToast(msg) {
+      toastMessage.textContent = msg;
+      toastMessage.classList.add('show');
+      setTimeout(() => {
+        toastMessage.classList.remove('show');
+      }, 2600);
+    }
+
+    /* ==========================================================================
+       INITIALIZATION & PROPORTIONAL ALLOCATION ENGINE
+       ========================================================================== */
+    function initApp() {
+      try {
+        const saved = localStorage.getItem('ukin_timer_state_v2');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.sessions && parsed.sessions.length > 0) {
+            appState.totalDurationMs = parsed.totalDurationMs || (50 * 60 * 1000);
+            appState.sessions = parsed.sessions;
+          }
+        }
+      } catch (e) {
+        console.warn('LocalStorage unavailable:', e);
+      }
+
+      resetState();
+      renderAll();
+    }
+
+    function saveToLocalStorage() {
+      try {
+        localStorage.setItem('ukin_timer_state_v2', JSON.stringify({
+          totalDurationMs: appState.totalDurationMs,
+          sessions: appState.sessions
+        }));
+      } catch (e) {
+        // Safe fail
+      }
+    }
+
+    /**
+     * Normalize base percentages and set initial allocated durations.
+     * Total video duration is strictly preserved.
+     */
+    function normalizeInitialDurations() {
+      const totalMs = appState.totalDurationMs;
+      let sumBaseMin = 0;
+      appState.sessions.forEach(s => {
+        sumBaseMin += s.durationMin;
+      });
+
+      if (sumBaseMin <= 0) sumBaseMin = 1;
+
+      appState.sessions.forEach(s => {
+        const ratio = s.durationMin / sumBaseMin;
+        s.basePercent = Math.round(ratio * 1000) / 10;
+        s.currentAllocatedMs = Math.round(totalMs * ratio);
+      });
+
+      if (appState.currentSessionIndex < appState.sessions.length) {
+        appState.currentSessionAllocatedMs = appState.sessions[appState.currentSessionIndex].currentAllocatedMs;
+      }
+    }
+
+    function resetState() {
+      appState.isRunning = false;
+      appState.currentSessionIndex = 0;
+      appState.completedSessionIds = [];
+      appState.isOvertimeAcknowledged = false;
+      appState.totalElapsedMs = 0;
+      appState.sessionElapsedMs = 0;
+      appState.lastTimestamp = null;
+
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+
+      normalizeInitialDurations();
+    }
+
+    /* ==========================================================================
+       TICK & TIME ENGINE (High-precision Timestamps)
+       ========================================================================== */
+    function tick() {
+      if (!appState.isRunning) return;
+
+      const now = performance.now();
+      if (!appState.lastTimestamp) {
+        appState.lastTimestamp = now;
+      }
+
+      const delta = now - appState.lastTimestamp;
+      appState.lastTimestamp = now;
+
+      // Advance master clocks
+      appState.totalElapsedMs += delta;
+      appState.sessionElapsedMs += delta;
+
+      // Check Session Remaining & Dynamic Color Triggers (Blue -> Orange 25% -> Red 0%)
+      const sessionRemaining = appState.currentSessionAllocatedMs - appState.sessionElapsedMs;
+      const ratioRemaining = appState.currentSessionAllocatedMs > 0
+        ? (sessionRemaining / appState.currentSessionAllocatedMs)
+        : 0;
+
+      if (sessionRemaining <= 0) {
+        bodyEl.classList.remove('theme-orange');
+        bodyEl.classList.add('theme-red');
+        handleSessionTimeout();
+      } else if (ratioRemaining <= 0.25) {
+        bodyEl.classList.remove('theme-red');
+        bodyEl.classList.add('theme-orange');
+        warningPanel.style.display = 'none';
+        timerBox.classList.remove('warning-border');
+        overtimeBadge.style.display = 'none';
+      } else {
+        bodyEl.classList.remove('theme-orange', 'theme-red');
+        warningPanel.style.display = 'none';
+        timerBox.classList.remove('warning-border');
+        overtimeBadge.style.display = 'none';
+      }
+
+      renderTimerDisplays();
+
+      animationFrameId = requestAnimationFrame(tick);
+    }
+
+    function handleSessionTimeout() {
+      timerBox.classList.add('warning-border');
+      bodyEl.classList.add('overtime-mode');
+
+      const overtimeMs = appState.sessionElapsedMs - appState.currentSessionAllocatedMs;
+
+      // Show Overtime Badge
+      overtimeBadge.style.display = 'inline-flex';
+      overtimeDuration.textContent = '+' + formatTime(overtimeMs);
+
+      // If user hasn't chosen "BELUM SELESAI" yet, keep showing the warning banner
+      if (!appState.isOvertimeAcknowledged) {
+        warningPanel.style.display = 'block';
+        const curName = appState.sessions[appState.currentSessionIndex]
+          ? appState.sessions[appState.currentSessionIndex].name
+          : "Sesi ini";
+        document.getElementById('warningMessage').innerHTML =
+          `Waktu untuk <strong>${curName}</strong> telah mencapai 00:00.<br>Apakah kegiatan sesi ini sudah selesai?`;
+      } else {
+        warningPanel.style.display = 'none';
+      }
+    }
+
+    /* ==========================================================================
+       PROPORTIONAL REDISTRIBUTION OF REMAINING TIME
+       ========================================================================== */
+    /**
+     * When any session completes (earlier or overtime):
+     * The remaining total UKIN time is calculated:
+     * remainingTotalMs = Math.max(0, totalDurationMs - totalElapsedMs)
+     * All upcoming sessions share this remaining time proportionally according to their planned base percentages!
+     */
+    function advanceToNextSession() {
+      const curIdx = appState.currentSessionIndex;
+
+      // Mark current session as completed
+      if (curIdx < appState.sessions.length) {
+        const curId = appState.sessions[curIdx].id;
+        if (!appState.completedSessionIds.includes(curId)) {
+          appState.completedSessionIds.push(curId);
+        }
+      }
+
+      const nextIdx = curIdx + 1;
+
+      // Check if all sessions are finished
+      if (nextIdx >= appState.sessions.length) {
+        appState.currentSessionIndex = appState.sessions.length;
+        appState.sessionElapsedMs = 0;
+        appState.currentSessionAllocatedMs = 0;
+        appState.isRunning = false;
+        appState.isOvertimeAcknowledged = false;
+        showToast("🎉 Seluruh sesi kegiatan UKIN telah selesai!");
+      } else {
+        // Compute remaining total time
+        const remainingTotalMs = Math.max(0, appState.totalDurationMs - appState.totalElapsedMs);
+
+        // Sum weights of remaining sessions
+        let remainingBaseSum = 0;
+        for (let i = nextIdx; i < appState.sessions.length; i++) {
+          remainingBaseSum += appState.sessions[i].durationMin;
+        }
+
+        if (remainingBaseSum > 0) {
+          // Proportionally distribute remaining total time
+          for (let i = nextIdx; i < appState.sessions.length; i++) {
+            const prop = appState.sessions[i].durationMin / remainingBaseSum;
+            appState.sessions[i].currentAllocatedMs = Math.max(0, Math.round(remainingTotalMs * prop));
+          }
+        } else {
+          for (let i = nextIdx; i < appState.sessions.length; i++) {
+            appState.sessions[i].currentAllocatedMs = 0;
+          }
+        }
+
+        appState.currentSessionIndex = nextIdx;
+        appState.sessionElapsedMs = 0;
+        appState.currentSessionAllocatedMs = appState.sessions[nextIdx].currentAllocatedMs;
+        appState.isOvertimeAcknowledged = false;
+
+        const nextName = appState.sessions[nextIdx].name;
+        showToast(`Beralih ke Sesi ${nextIdx + 1}: ${nextName} (Alokasi waktu disesuaikan proporsional)`);
+      }
+
+      // Reset warnings for next session
+      warningPanel.style.display = 'none';
+      timerBox.classList.remove('warning-border');
+      bodyEl.classList.remove('theme-orange', 'theme-red');
+      overtimeBadge.style.display = 'none';
+
+      renderAll();
+    }
+
+    /* ==========================================================================
+       RENDERING LOGIC
+       ========================================================================== */
+    function renderTimerDisplays() {
+      const idx = appState.currentSessionIndex;
+      const totalRemainingMs = Math.max(0, appState.totalDurationMs - appState.totalElapsedMs);
+
+      // 1. Total Timer Panel Display (Large Countdown with H.MM.SS support)
+      totalTimerLargeDisplay.textContent = formatTime(totalRemainingMs, true);
+      totalRemainingText.textContent = formatTime(totalRemainingMs, true);
+      totalAllocatedText.textContent = formatTime(appState.totalDurationMs, true);
+
+      const percent = Math.min(100, Math.max(0, (totalRemainingMs / appState.totalDurationMs) * 100));
+      totalProgressBar.style.width = percent + '%';
+
+      // 2. Session Timer Panel Display (Large Countdown)
+      if (idx < appState.sessions.length) {
+        const curSess = appState.sessions[idx];
+        if (sessionKickerText) {
+          sessionKickerText.textContent = `SESI ${idx + 1} DARI ${appState.sessions.length}`;
+        }
+        currentSessionLabel.textContent = curSess.name.toUpperCase();
+        if (sessionSubStatusText) {
+          sessionSubStatusText.textContent = `● Sedang Berlangsung (${curSess.basePercent}%)`;
+        }
+
+        const sessionRemaining = appState.currentSessionAllocatedMs - appState.sessionElapsedMs;
+        if (sessionRemaining <= 0) {
+          sessionTimerDisplay.textContent = "00:00";
+        } else {
+          sessionTimerDisplay.textContent = formatTime(sessionRemaining);
+        }
+      } else {
+        if (sessionKickerText) {
+          sessionKickerText.textContent = "SELESAI";
+        }
+        currentSessionLabel.textContent = "SEMUA SESI TELAH SELESAI";
+        if (sessionSubStatusText) {
+          sessionSubStatusText.textContent = "Seluruh kegiatan selesai";
+        }
+        sessionTimerDisplay.textContent = "00:00";
+      }
+
+      // 3. Update Previous and Next Session indicators with big titles and durations
+      if (prevSessionNameText && nextSessionNameText) {
+        const prevSess = idx > 0 ? appState.sessions[idx - 1] : null;
+        const nextSess = idx < appState.sessions.length - 1 ? appState.sessions[idx + 1] : null;
+
+        if (prevSess) {
+          prevSessionNameText.textContent = prevSess.name;
+          const prevDur = formatDurationPretty(prevSess.currentAllocatedMs || (prevSess.durationMin * 60 * 1000));
+          if (prevSessionDurText) {
+            prevSessionDurText.textContent = prevDur;
+            prevSessionDurText.style.display = 'inline-block';
+          }
+        } else {
+          prevSessionNameText.textContent = "Tidak ada (Awal Kegiatan)";
+          if (prevSessionDurText) {
+            prevSessionDurText.style.display = 'none';
+          }
+        }
+
+        if (nextSess) {
+          nextSessionNameText.textContent = nextSess.name;
+          const nextDur = formatDurationPretty(nextSess.currentAllocatedMs || (nextSess.durationMin * 60 * 1000));
+          if (nextSessionDurText) {
+            nextSessionDurText.textContent = nextDur;
+            nextSessionDurText.style.display = 'inline-block';
+          }
+        } else {
+          nextSessionNameText.textContent = "Tidak ada (Sesi Terakhir)";
+          if (nextSessionDurText) {
+            nextSessionDurText.style.display = 'none';
+          }
+        }
+      }
+
+      // 4. Start/Pause Button Text
+      if (appState.isRunning) {
+        btnStartPause.textContent = "PAUSE";
+        btnStartPause.classList.add('is-running');
+      } else {
+        btnStartPause.textContent = (appState.totalElapsedMs > 0 && idx < appState.sessions.length) ? "RESUME" : "START";
+        btnStartPause.classList.remove('is-running');
+      }
+    }
+
+    function renderSessionList() {
+      sessionCountBadge.textContent = `${appState.sessions.length} Sesi`;
+      sessionListContainer.innerHTML = '';
+
+      appState.sessions.forEach((sess, i) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'session-item';
+
+        const isCompleted = appState.completedSessionIds.includes(sess.id);
+        const isActive = (i === appState.currentSessionIndex) && !isCompleted;
+
+        if (isActive) itemEl.classList.add('is-active');
+        if (isCompleted) itemEl.classList.add('is-completed');
+
+        const pctText = sess.basePercent ? `(${sess.basePercent}%)` : '';
+        let statusHtml = `Menunggu giliran ${pctText}`;
+        if (isActive) {
+          statusHtml = `<span style="color:#ffffff;">● Sedang Berlangsung ${pctText}</span>`;
+        } else if (isCompleted) {
+          statusHtml = `Selesai ${pctText}`;
+        }
+
+        // Display current dynamically adjusted allocated duration
+        const durationText = formatDurationPretty(sess.currentAllocatedMs || (sess.durationMin * 60 * 1000));
+
+        let rightSideHtml = `<span class="session-duration-tag">${durationText}</span>`;
+        if (isCompleted) {
+          rightSideHtml = `<span class="session-check-icon" title="Selesai">✓</span> <span class="session-duration-tag">${durationText}</span>`;
+        }
+
+        itemEl.innerHTML = `
+          <div class="session-left">
+            <div class="session-number">${isCompleted ? '✓' : (i + 1)}</div>
+            <div class="session-details">
+              <span class="session-name">${sess.name}</span>
+              <span class="session-status-text">${statusHtml}</span>
+            </div>
+          </div>
+          <div class="session-right">
+            ${rightSideHtml}
+          </div>
+        `;
+
+        sessionListContainer.appendChild(itemEl);
+      });
+    }
+
+    function renderAll() {
+      renderTimerDisplays();
+      renderSessionList();
+    }
+
+    /* ==========================================================================
+       USER EVENT HANDLERS
+       ========================================================================== */
+    // Start / Pause
+    btnStartPause.addEventListener('click', () => {
+      if (appState.currentSessionIndex >= appState.sessions.length) {
+        showToast("Semua sesi telah selesai. Silakan Reset untuk mengulang.");
+        return;
+      }
+
+      if (appState.isRunning) {
+        appState.isRunning = false;
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+          animationFrameId = null;
+        }
+        appState.lastTimestamp = null;
+        renderTimerDisplays();
+      } else {
+        appState.isRunning = true;
+        appState.lastTimestamp = performance.now();
+        animationFrameId = requestAnimationFrame(tick);
+        renderTimerDisplays();
+      }
+    });
+
+    // Next Session (Skip / Selesai Manual)
+    btnNextSession.addEventListener('click', () => {
+      if (appState.currentSessionIndex >= appState.sessions.length) {
+        showToast("Semua sesi sudah selesai.");
+        return;
+      }
+      advanceToNextSession();
+    });
+
+    // Warning Panel: "SELESAI"
+    btnAlertDone.addEventListener('click', () => {
+      advanceToNextSession();
+    });
+
+    // Warning Panel: "BELUM SELESAI"
+    btnAlertNotDone.addEventListener('click', () => {
+      appState.isOvertimeAcknowledged = true;
+      warningPanel.style.display = 'none';
+      showToast("Sesi tetap berjalan. Tekan tombol ⏭ saat kegiatan selesai.");
+    });
+
+    // Reset Button
+    btnReset.addEventListener('click', () => {
+      confirmResetModal.classList.add('is-open');
+    });
+
+    btnCancelReset.addEventListener('click', () => {
+      confirmResetModal.classList.remove('is-open');
+    });
+
+    btnConfirmReset.addEventListener('click', () => {
+      confirmResetModal.classList.remove('is-open');
+      resetState();
+      warningPanel.style.display = 'none';
+      timerBox.classList.remove('warning-border');
+      bodyEl.classList.remove('theme-orange', 'theme-red');
+      overtimeBadge.style.display = 'none';
+      renderAll();
+      showToast("Timer UKIN telah diatur ulang ke kondisi awal.");
+    });
+
+    // Fullscreen Toggle (if element present)
+    if (btnFullscreen) {
+      btnFullscreen.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(err => {
+            showToast("Layar penuh tidak didukung di lingkungan ini.");
+          });
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen().catch(err => console.log(err));
+          }
+        }
+      });
+    }
+
+    /* ==========================================================================
+       SETTINGS MODAL LOGIC
+       ========================================================================== */
+    function openSettings() {
+      if (appState.isRunning) {
+        appState.isRunning = false;
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+          animationFrameId = null;
+        }
+        renderTimerDisplays();
+      }
+
+      draftSettings.totalMinutes = Math.round(appState.totalDurationMs / (60 * 1000));
+      draftSettings.sessions = JSON.parse(JSON.stringify(appState.sessions));
+
+      inputTotalMinutes.value = draftSettings.totalMinutes;
+      renderEditSessionsList();
+
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('is-active'));
+      const activeBtn = document.getElementById('btnPreset' + draftSettings.totalMinutes);
+      if (activeBtn) activeBtn.classList.add('is-active');
+
+      btnSaveSettings.textContent = 'Simpan Perubahan (' + draftSettings.totalMinutes + ' Mnt)';
+      settingsModal.classList.add('is-open');
+    }
+
+    function closeSettings() {
+      settingsModal.classList.remove('is-open');
+    }
+
+    function renderEditSessionsList() {
+      editSessionsList.innerHTML = '';
+      let sumMinutes = 0;
+      draftSettings.sessions.forEach(s => { sumMinutes += s.durationMin; });
+      if (sumMinutes <= 0) sumMinutes = 1;
+
+      draftSettings.sessions.forEach((sess, idx) => {
+        const pct = Math.round((sess.durationMin / sumMinutes) * 100);
+        const row = document.createElement('div');
+        row.className = 'edit-session-row';
+        row.innerHTML = `
+          <div class="drag-handle">${idx + 1}</div>
+          <input type="text" class="form-input sess-name-input" data-index="${idx}" value="${sess.name}" placeholder="Nama Sesi">
+          <input type="number" class="form-input sess-dur-input" data-index="${idx}" min="1" max="180" value="${sess.durationMin}" placeholder="Mnt">
+          <div class="pct-label">${pct}%</div>
+          <div class="row-btn-group">
+            <button type="button" class="btn-row-action btn-move-up" data-index="${idx}" title="Pindah ke atas" ${idx === 0 ? 'disabled style="opacity:0.3;"' : ''}>▲</button>
+            <button type="button" class="btn-row-action btn-move-down" data-index="${idx}" title="Pindah ke bawah" ${idx === draftSettings.sessions.length - 1 ? 'disabled style="opacity:0.3;"' : ''}>▼</button>
+            <button type="button" class="btn-row-action btn-row-delete" data-index="${idx}" title="Hapus sesi">✕</button>
+          </div>
+        `;
+        editSessionsList.appendChild(row);
+      });
+
+      // Update Summary
+      const targetMin = parseInt(inputTotalMinutes.value, 10) || draftSettings.totalMinutes;
+      const isMatch = (sumMinutes === targetMin);
+      sessionsSummaryText.innerHTML = `Total Sesi: <strong>${sumMinutes} Mnt</strong> ${isMatch ? '(Sesuai 100%)' : `(Target: ${targetMin} Mnt)`}`;
+      btnNormalizeProportion.style.display = isMatch ? 'none' : 'inline-block';
+
+      // Bind input listeners
+      editSessionsList.querySelectorAll('.sess-name-input').forEach(inp => {
+        inp.addEventListener('input', (e) => {
+          const i = parseInt(e.target.dataset.index, 10);
+          draftSettings.sessions[i].name = e.target.value;
+        });
+      });
+
+      editSessionsList.querySelectorAll('.sess-dur-input').forEach(inp => {
+        inp.addEventListener('input', (e) => {
+          const i = parseInt(e.target.dataset.index, 10);
+          draftSettings.sessions[i].durationMin = Math.max(1, parseInt(e.target.value, 10) || 1);
+          renderEditSessionsList();
+        });
+      });
+
+      editSessionsList.querySelectorAll('.btn-move-up').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const i = parseInt(e.currentTarget.dataset.index, 10);
+          if (i > 0) {
+            const temp = draftSettings.sessions[i];
+            draftSettings.sessions[i] = draftSettings.sessions[i - 1];
+            draftSettings.sessions[i - 1] = temp;
+            renderEditSessionsList();
+          }
+        });
+      });
+
+      editSessionsList.querySelectorAll('.btn-move-down').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const i = parseInt(e.currentTarget.dataset.index, 10);
+          if (i < draftSettings.sessions.length - 1) {
+            const temp = draftSettings.sessions[i];
+            draftSettings.sessions[i] = draftSettings.sessions[i + 1];
+            draftSettings.sessions[i + 1] = temp;
+            renderEditSessionsList();
+          }
+        });
+      });
+
+      editSessionsList.querySelectorAll('.btn-row-delete').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          if (draftSettings.sessions.length <= 1) {
+            showToast("Minimal harus ada 1 sesi kegiatan!");
+            return;
+          }
+          const i = parseInt(e.currentTarget.dataset.index, 10);
+          draftSettings.sessions.splice(i, 1);
+          renderEditSessionsList();
+        });
+      });
+    }
+
+    inputTotalMinutes.addEventListener('input', () => {
+      renderEditSessionsList();
+    });
+
+    btnNormalizeProportion.addEventListener('click', () => {
+      const targetMin = parseInt(inputTotalMinutes.value, 10);
+      if (isNaN(targetMin) || targetMin <= 0) return;
+
+      let sumMinutes = 0;
+      draftSettings.sessions.forEach(s => { sumMinutes += s.durationMin; });
+      if (sumMinutes <= 0) return;
+
+      let allocatedSum = 0;
+      draftSettings.sessions.forEach((s, idx) => {
+        if (idx === draftSettings.sessions.length - 1) {
+          s.durationMin = Math.max(1, targetMin - allocatedSum);
+        } else {
+          const scaled = Math.max(1, Math.round((s.durationMin / sumMinutes) * targetMin));
+          s.durationMin = scaled;
+          allocatedSum += scaled;
+        }
+      });
+      renderEditSessionsList();
+      showToast("Durasi sesi disesuaikan proporsional ke total durasi.");
+    });
+
+    btnSettings.addEventListener('click', openSettings);
+    btnCloseSettings.addEventListener('click', closeSettings);
+    btnCancelSettings.addEventListener('click', closeSettings);
+
+    btnAddSessionRow.addEventListener('click', () => {
+      const newId = Date.now();
+      draftSettings.sessions.push({
+        id: newId,
+        name: `Kegiatan Baru #${draftSettings.sessions.length + 1}`,
+        durationMin: 10
+      });
+      renderEditSessionsList();
+    });
+
+    // Preset Buttons
+    function applyPreset(presetKey) {
+      const p = PRESETS[presetKey];
+      draftSettings.totalMinutes = p.totalMinutes;
+      draftSettings.sessions = p.sessions.map((s, idx) => ({
+        id: idx + 1,
+        name: s.name,
+        durationMin: s.durationMin
+      }));
+      inputTotalMinutes.value = draftSettings.totalMinutes;
+      renderEditSessionsList();
+
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('is-active'));
+      const activeBtn = document.getElementById('btnPreset' + p.totalMinutes);
+      if (activeBtn) activeBtn.classList.add('is-active');
+
+      btnSaveSettings.textContent = 'Simpan & Terapkan (' + p.totalMinutes + ' Mnt)';
+      showToast('Preset ' + p.totalMinutes + ' Menit dimuat. Klik tombol biru "Simpan" untuk menerapkan.');
+    }
+
+    btnPreset50.addEventListener('click', () => applyPreset('p50'));
+    btnPreset70.addEventListener('click', () => applyPreset('p70'));
+    btnPreset80.addEventListener('click', () => applyPreset('p80'));
+    btnPreset90.addEventListener('click', () => applyPreset('p90'));
+    btnPreset30.addEventListener('click', () => applyPreset('p30'));
+
+    // Save Settings
+    btnSaveSettings.addEventListener('click', () => {
+      const newTotal = parseInt(inputTotalMinutes.value, 10);
+      if (isNaN(newTotal) || newTotal < 5) {
+        showToast("Durasi total minimal 5 menit.");
+        return;
+      }
+
+      if (draftSettings.sessions.length === 0) {
+        showToast("Daftar sesi tidak boleh kosong.");
+        return;
+      }
+
+      appState.totalDurationMs = newTotal * 60 * 1000;
+      appState.sessions = JSON.parse(JSON.stringify(draftSettings.sessions));
+      saveToLocalStorage();
+
+      resetState();
+      closeSettings();
+      renderAll();
+      showToast("Pengaturan disimpan. Pembagian proporsional aktif.");
+    });
+
+    // Initialize application on page load
+    initApp();
+  </script>
+</body>
+</html>
