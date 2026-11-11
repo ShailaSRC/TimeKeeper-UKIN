@@ -781,63 +781,133 @@
       font-weight: 700;
     }
 
-    /* Modal Sessions Manager */
+    /* Modal Sessions Manager - Drag and Drop & Real Action Buttons */
+    .edit-sessions-header {
+      display: grid;
+      grid-template-columns: 42px 1fr 78px 46px 40px;
+      gap: 8px;
+      padding: 0 10px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #6b7280;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
     .edit-sessions-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-top: 4px;
+      gap: 8px;
+      margin-top: 2px;
     }
 
     .edit-session-row {
       display: grid;
-      grid-template-columns: 24px 1fr 65px 50px 64px;
-      gap: 6px;
+      grid-template-columns: 42px 1fr 78px 46px 40px;
+      gap: 8px;
       align-items: center;
-      background: #f9fafb;
+      background: #ffffff;
       padding: 8px 10px;
-      border-radius: 6px;
+      border-radius: 8px;
       border: 1px solid #e5e7eb;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+      cursor: grab;
+    }
+
+    .edit-session-row:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .edit-session-row.is-dragging {
+      opacity: 0.45;
+      background: #e0f2fe;
+      border: 2px dashed #0284c7;
+      cursor: grabbing;
+    }
+
+    .edit-session-row.drag-over {
+      border-top: 3px solid #0284c7;
+      background: #f0f9ff;
     }
 
     .drag-handle {
-      color: #9ca3af;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #94a3b8;
       font-size: 13px;
-      font-weight: bold;
-      text-align: center;
+      font-weight: 800;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .drag-handle:hover {
+      color: #475569;
+    }
+
+    .drag-handle svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .sess-num-badge {
+      background: #f1f5f9;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 800;
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .pct-label {
       font-size: 12px;
-      font-weight: 700;
-      color: #6b7280;
-      text-align: right;
-    }
-
-    .row-btn-group {
-      display: flex;
-      gap: 3px;
-      justify-content: flex-end;
-    }
-
-    .btn-row-action {
-      background: none;
-      border: none;
-      color: #6b7280;
-      cursor: pointer;
-      padding: 4px 5px;
+      font-weight: 800;
+      color: #64748b;
+      text-align: center;
+      background: #f8fafc;
+      padding: 6px 4px;
       border-radius: 4px;
-      font-size: 12px;
+      border: 1px solid #e2e8f0;
     }
 
-    .btn-row-action:hover {
-      background: #e5e7eb;
-      color: #1f2937;
+    .btn-row-delete {
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      border-radius: 6px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+      box-shadow: 0 1px 2px rgba(220, 38, 38, 0.1);
     }
 
     .btn-row-delete:hover {
-      background: #fee2e2;
-      color: #dc2626;
+      background: #fca5a5;
+      color: #991b1b;
+      transform: scale(1.05);
+      box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+    }
+
+    .btn-row-delete:active {
+      transform: scale(0.95);
+    }
+
+    .btn-row-delete svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
     }
 
     .sessions-summary-card {
@@ -1220,7 +1290,14 @@
 
         <!-- Session List Editor -->
         <div class="form-group">
-          <label class="form-label">Daftar Sesi Kegiatan & Proporsi</label>
+          <label class="form-label">Daftar Sesi Kegiatan & Proporsi (Tahan & Geser untuk Mengatur Urutan)</label>
+          <div class="edit-sessions-header">
+            <span>Urut</span>
+            <span>Nama Kegiatan</span>
+            <span>Menit</span>
+            <span style="text-align: center;">Porsi</span>
+            <span style="text-align: center;">Aksi</span>
+          </div>
           <div class="edit-sessions-list" id="editSessionsList">
             <!-- Rendered dynamically -->
           </div>
@@ -1920,6 +1997,8 @@
       btnNormalizeProportion.style.display = isMatch ? 'none' : 'inline-block';
     }
 
+    let dragSrcRowIndex = null;
+
     function renderEditSessionsList() {
       editSessionsList.innerHTML = '';
       let sumMinutes = 0;
@@ -1927,27 +2006,70 @@
       const safeSum = sumMinutes > 0 ? sumMinutes : 1;
 
       draftSettings.sessions.forEach((sess, idx) => {
-        const durVal = sess.durationMin || 0;
+        const durVal = (sess.durationMin !== undefined && sess.durationMin !== null) ? sess.durationMin : 0;
         const pct = Math.round((durVal / safeSum) * 100);
         const row = document.createElement('div');
         row.className = 'edit-session-row';
+        row.draggable = true;
+        row.dataset.index = idx;
         row.innerHTML = `
-          <div class="drag-handle">${idx + 1}</div>
-          <input type="text" class="form-input sess-name-input" data-index="${idx}" value="${sess.name}" placeholder="Nama Sesi">
-          <input type="number" class="form-input sess-dur-input" data-index="${idx}" min="1" max="300" value="${durVal}" placeholder="Mnt">
-          <div class="pct-label">${pct}%</div>
-          <div class="row-btn-group">
-            <button type="button" class="btn-row-action btn-move-up" data-index="${idx}" title="Pindah ke atas" ${idx === 0 ? 'disabled style="opacity:0.3;"' : ''}>▲</button>
-            <button type="button" class="btn-row-action btn-move-down" data-index="${idx}" title="Pindah ke bawah" ${idx === draftSettings.sessions.length - 1 ? 'disabled style="opacity:0.3;"' : ''}>▼</button>
-            <button type="button" class="btn-row-action btn-row-delete" data-index="${idx}" title="Hapus sesi">✕</button>
+          <div class="drag-handle" title="Tahan dan seret untuk memindahkan urutan">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 3H7v2h2V3zm0 4H7v2h2V7zm0 4H7v2h2v-2zm0 4H7v2h2v-2zm0 4H7v2h2v-2zm8-16h-2v2h2V3zm0 4h-2v2h2V7zm0 4h-2v2h2v-2zm0 4h-2v2h2v-2zm0 4h-2v2h2v-2z"/>
+            </svg>
+            <span class="sess-num-badge">${idx + 1}</span>
           </div>
+          <input type="text" class="form-input sess-name-input" data-index="${idx}" value="${sess.name}" placeholder="Nama Sesi Kegiatan">
+          <input type="number" class="form-input sess-dur-input" data-index="${idx}" min="0" max="300" value="${durVal}" placeholder="0">
+          <div class="pct-label">${pct}%</div>
+          <button type="button" class="btn-row-delete" data-index="${idx}" title="Hapus sesi ini">
+            <svg viewBox="0 0 24 24">
+              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+            </svg>
+          </button>
         `;
         editSessionsList.appendChild(row);
       });
 
       updateSessionSummaryOnly();
 
-      // Bind input listeners with smooth typing support
+      // Drag and Drop Event Handlers
+      editSessionsList.querySelectorAll('.edit-session-row').forEach(row => {
+        row.addEventListener('dragstart', (e) => {
+          dragSrcRowIndex = parseInt(row.dataset.index, 10);
+          row.classList.add('is-dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', dragSrcRowIndex);
+        });
+
+        row.addEventListener('dragend', () => {
+          row.classList.remove('is-dragging');
+          editSessionsList.querySelectorAll('.edit-session-row').forEach(r => r.classList.remove('drag-over'));
+        });
+
+        row.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          row.classList.add('drag-over');
+        });
+
+        row.addEventListener('dragleave', () => {
+          row.classList.remove('drag-over');
+        });
+
+        row.addEventListener('drop', (e) => {
+          e.preventDefault();
+          row.classList.remove('drag-over');
+          const targetIndex = parseInt(row.dataset.index, 10);
+          if (dragSrcRowIndex !== null && dragSrcRowIndex !== targetIndex) {
+            const movedItem = draftSettings.sessions.splice(dragSrcRowIndex, 1)[0];
+            draftSettings.sessions.splice(targetIndex, 0, movedItem);
+            renderEditSessionsList();
+          }
+        });
+      });
+
+      // Bind input listeners with smooth typing & support for 0 (no stuck on 1)
       editSessionsList.querySelectorAll('.sess-name-input').forEach(inp => {
         inp.addEventListener('input', (e) => {
           const i = parseInt(e.target.dataset.index, 10);
@@ -1958,24 +2080,26 @@
       editSessionsList.querySelectorAll('.sess-dur-input').forEach(inp => {
         inp.addEventListener('input', (e) => {
           const i = parseInt(e.target.dataset.index, 10);
-          const raw = e.target.value;
+          const raw = e.target.value.trim();
           if (raw !== '') {
             const num = parseInt(raw, 10);
-            if (!isNaN(num) && num > 0) {
+            if (!isNaN(num) && num >= 0) {
               draftSettings.sessions[i].durationMin = num;
             }
+          } else {
+            draftSettings.sessions[i].durationMin = 0;
           }
-          // Update summary and percentages smoothly without stealing focus or resetting input
           updateSessionSummaryOnly();
         });
 
         inp.addEventListener('blur', (e) => {
           const i = parseInt(e.target.dataset.index, 10);
-          const num = parseInt(e.target.value, 10);
-          if (isNaN(num) || num < 1) {
-            e.target.value = 1;
-            draftSettings.sessions[i].durationMin = 1;
+          const raw = e.target.value.trim();
+          if (raw === '' || isNaN(parseInt(raw, 10))) {
+            e.target.value = 0;
+            draftSettings.sessions[i].durationMin = 0;
           } else {
+            const num = Math.max(0, parseInt(raw, 10));
             e.target.value = num;
             draftSettings.sessions[i].durationMin = num;
           }
@@ -1983,30 +2107,7 @@
         });
       });
 
-      editSessionsList.querySelectorAll('.btn-move-up').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const i = parseInt(e.currentTarget.dataset.index, 10);
-          if (i > 0) {
-            const temp = draftSettings.sessions[i];
-            draftSettings.sessions[i] = draftSettings.sessions[i - 1];
-            draftSettings.sessions[i - 1] = temp;
-            renderEditSessionsList();
-          }
-        });
-      });
-
-      editSessionsList.querySelectorAll('.btn-move-down').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const i = parseInt(e.currentTarget.dataset.index, 10);
-          if (i < draftSettings.sessions.length - 1) {
-            const temp = draftSettings.sessions[i];
-            draftSettings.sessions[i] = draftSettings.sessions[i + 1];
-            draftSettings.sessions[i + 1] = temp;
-            renderEditSessionsList();
-          }
-        });
-      });
-
+      // Delete Button Listener
       editSessionsList.querySelectorAll('.btn-row-delete').forEach(btn => {
         btn.addEventListener('click', (e) => {
           if (draftSettings.sessions.length <= 1) {
@@ -2014,8 +2115,10 @@
             return;
           }
           const i = parseInt(e.currentTarget.dataset.index, 10);
+          const removedName = draftSettings.sessions[i].name;
           draftSettings.sessions.splice(i, 1);
           renderEditSessionsList();
+          showToast(`Sesi "${removedName}" dihapus.`);
         });
       });
     }
