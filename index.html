@@ -6,17 +6,16 @@
   <title>UKIN Session Timer - Pomofocus Style</title>
   <style>
     :root {
-      --bg-primary: #386b99;
-      --bg-blue: #386b99;
-      --bg-orange: #c86827;
-      --bg-red: #ba4949;
-      --card-bg: rgba(255, 255, 255, 0.15);
-      --card-bg-active: rgba(255, 255, 255, 0.28);
-      --card-border: rgba(255, 255, 255, 0.3);
+      --bg-primary: #000000;
+      --bg-black: #000000;
+      --bg-red: #d91e1e;
+      --card-bg: #141414;
+      --card-bg-active: #ffffff;
+      --card-border: rgba(255, 255, 255, 0.35);
       --text-main: #ffffff;
-      --text-muted: rgba(255, 255, 255, 0.85);
-      --btn-shadow: rgb(235, 235, 235) 0px 6px 0px;
-      --btn-shadow-active: rgb(220, 220, 220) 0px 2px 0px;
+      --text-muted: rgba(255, 255, 255, 0.9);
+      --btn-shadow: rgb(210, 210, 210) 0px 6px 0px;
+      --btn-shadow-active: rgb(180, 180, 180) 0px 2px 0px;
     }
 
     * {
@@ -28,20 +27,17 @@
     }
 
     body {
-      background-color: var(--bg-blue);
+      background-color: var(--bg-black);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: background-color 0.5s ease;
+      transition: background-color 0.4s ease;
       padding-bottom: 60px;
     }
 
-    body.theme-orange {
-      background-color: var(--bg-orange);
-    }
-
+    /* Red outer background when <= 3 minutes remaining in session */
     body.theme-red {
       background-color: var(--bg-red);
     }
@@ -129,20 +125,19 @@
       gap: 12px;
     }
 
-    /* Shared Panel Card Styles - Pure Clean Borderless Pomofocus (Exact Same Size) */
+    /* Shared Panel Card Styles - High-Contrast Box on Black/Red Background */
     .timer-panel {
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 6px;
+      background: #141414;
+      border-radius: 8px;
       padding: 6px 32px;
       min-height: auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
       position: relative;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      backdrop-filter: blur(6px);
-      transition: background 0.3s, box-shadow 0.3s;
-      border: none;
+      box-shadow: 0 6px 28px rgba(0, 0, 0, 0.5);
+      transition: background 0.3s, box-shadow 0.3s, border-color 0.3s;
+      border: 2px solid rgba(255, 255, 255, 0.28);
       width: 100%;
       gap: 24px;
     }
@@ -224,7 +219,7 @@
     }
 
     .total-timer-panel {
-      background: rgba(255, 255, 255, 0.15);
+      background: #141414;
     }
 
     .total-timer-panel .timer-display-large {
@@ -305,20 +300,19 @@
     }
 
     .session-nav-card {
-      background: rgba(255, 255, 255, 0.15);
-      border: none;
-      border-radius: 6px;
+      background: #141414;
+      border: 2px solid rgba(255, 255, 255, 0.28);
+      border-radius: 8px;
       padding: 14px 26px;
       display: flex;
       flex-direction: column;
       gap: 4px;
-      backdrop-filter: blur(6px);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-      transition: background 0.2s;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+      transition: background 0.2s, border-color 0.2s;
     }
 
     .session-nav-card:hover {
-      background: rgba(255, 255, 255, 0.18);
+      background: #1c1c1c;
     }
 
     .nav-card-kicker {
@@ -347,8 +341,8 @@
     .nav-dur-badge {
       font-size: clamp(1.4rem, 2.2vw, 2.1rem);
       font-weight: 900;
-      color: #ffffff;
-      background: rgba(0, 0, 0, 0.16);
+      color: #000000;
+      background: #ffffff;
       padding: 6px 18px;
       border-radius: 6px;
       white-space: nowrap;
@@ -365,61 +359,47 @@
       margin: 0 auto;
     }
 
-    .btn-main-action {
+    .btn-main-action,
+    .btn-sub-action {
       background-color: #ffffff;
-      color: var(--bg-blue);
+      color: #000000;
       border: none;
       width: 240px;
       height: 58px;
       font-size: 24px;
-      font-weight: 800;
+      font-weight: 900;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
-      box-shadow: rgb(235, 235, 235) 0px 6px 0px;
+      box-shadow: rgb(200, 200, 200) 0px 6px 0px;
       transition: all 0.1s ease-in-out;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
 
-    body.theme-orange .btn-main-action {
-      color: var(--bg-orange);
-    }
-
-    body.theme-red .btn-main-action {
+    body.theme-red .btn-main-action,
+    body.theme-red .btn-sub-action {
       color: var(--bg-red);
     }
 
+    .btn-main-action:hover,
+    .btn-sub-action:hover {
+      background-color: #f3f4f6;
+    }
+
     .btn-main-action:active,
-    .btn-main-action.is-running {
+    .btn-main-action.is-running,
+    .btn-sub-action:active {
       transform: translateY(4px);
       box-shadow: var(--btn-shadow-active);
     }
 
-    .btn-sub-action {
-      background: rgba(255, 255, 255, 0.22);
-      border: none;
-      color: #ffffff;
-      width: 48px;
-      height: 48px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-    }
-
-    .btn-sub-action:hover {
-      background: rgba(255, 255, 255, 0.35);
-    }
-
-    .btn-sub-action:active {
-      transform: scale(0.95);
-    }
-
     .btn-sub-action svg {
-      width: 22px;
-      height: 22px;
+      width: 26px;
+      height: 26px;
       fill: currentColor;
     }
 
@@ -1056,10 +1036,11 @@
       .btn-icon-text {
         padding: 8px 10px;
       }
-      .btn-main-action {
-        width: 180px;
+      .btn-main-action,
+      .btn-sub-action {
+        width: 165px;
         height: 54px;
-        font-size: 21px;
+        font-size: 20px;
       }
       .edit-session-row {
         grid-template-columns: 20px 1fr 55px 45px 55px;
@@ -1172,6 +1153,7 @@
     <div class="timer-controls">
       <button class="btn-main-action" id="btnStartPause">START</button>
       <button class="btn-sub-action" id="btnNextSession" title="Lanjut ke Sesi Berikutnya">
+        <span>NEXT</span>
         <svg viewBox="0 0 24 24">
           <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
         </svg>
@@ -1534,24 +1516,20 @@
       appState.totalElapsedMs += delta;
       appState.sessionElapsedMs += delta;
 
-      // Check Session Remaining & Dynamic Color Triggers (Blue -> Orange 25% -> Red 0%)
+      // Check Session Remaining & 3-Minute Red Outer Background Trigger (<= 180,000 ms)
       const sessionRemaining = appState.currentSessionAllocatedMs - appState.sessionElapsedMs;
-      const ratioRemaining = appState.currentSessionAllocatedMs > 0
-        ? (sessionRemaining / appState.currentSessionAllocatedMs)
-        : 0;
+      const THREE_MINUTES_MS = 3 * 60 * 1000;
 
       if (sessionRemaining <= 0) {
-        bodyEl.classList.remove('theme-orange');
         bodyEl.classList.add('theme-red');
         handleSessionTimeout();
-      } else if (ratioRemaining <= 0.25) {
-        bodyEl.classList.remove('theme-red');
-        bodyEl.classList.add('theme-orange');
+      } else if (sessionRemaining <= THREE_MINUTES_MS) {
+        bodyEl.classList.add('theme-red');
         warningPanel.style.display = 'none';
         timerBox.classList.remove('warning-border');
         overtimeBadge.style.display = 'none';
       } else {
-        bodyEl.classList.remove('theme-orange', 'theme-red');
+        bodyEl.classList.remove('theme-red');
         warningPanel.style.display = 'none';
         timerBox.classList.remove('warning-border');
         overtimeBadge.style.display = 'none';
@@ -1661,6 +1639,18 @@
     function renderTimerDisplays() {
       const idx = appState.currentSessionIndex;
       const totalRemainingMs = Math.max(0, appState.totalDurationMs - appState.totalElapsedMs);
+
+      // Update outer background color (Red if active session has <= 3 mins left and timer has started, else Black)
+      if (idx < appState.sessions.length && appState.sessionElapsedMs > 0) {
+        const sessRem = appState.currentSessionAllocatedMs - appState.sessionElapsedMs;
+        if (sessRem <= 3 * 60 * 1000) {
+          bodyEl.classList.add('theme-red');
+        } else {
+          bodyEl.classList.remove('theme-red');
+        }
+      } else {
+        bodyEl.classList.remove('theme-red');
+      }
 
       // 1. Total Timer Panel Display (Large Countdown with H.MM.SS support)
       totalTimerLargeDisplay.textContent = formatTime(totalRemainingMs, true);
